@@ -1,13 +1,12 @@
 import streamlit as st
+from google.oauth2 import service_account
 import gspread
-import json
-from oauth2client.service_account import ServiceAccountCredentials
 from datetime import date
 
-# Configuración de página
+# Configuración de la página
 st.set_page_config(page_title="Alisto Unimar", layout="centered")
 
-# Estilos opcionales
+# Estilos CSS personalizados
 st.markdown("""
     <style>
     .stButton>button {
@@ -28,19 +27,18 @@ placas = [
     "DEMASA","INOLASA","EXPORTACION UNIMAR","HILLTOP","SAM","CARTAINESA","AUTODELI","WALMART","PRICSMART"
 ]
 
-# Autenticación con Google Sheets desde secrets
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-service_account_info = json.loads(st.secrets["gcp_service_account"].to_json())
-creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
-client = gspread.authorize(creds)
+# Autenticación con Google Sheets usando credenciales desde st.secrets
+service_account_info = st.secrets["gcp_service_account"]
+credentials = service_account.Credentials.from_service_account_info(service_account_info)
+client = gspread.authorize(credentials)
 
-# Accede a la hoja de cálculo
+# Accede a la hoja
 sheet = client.open("Registros Unimar").sheet1
 
-# Encabezado
+# Título
 st.markdown("<h2 style='color: teal;'>📋 Registro de ingreso de unidades</h2>", unsafe_allow_html=True)
 
-# Formulario
+# Formulario de ingreso
 with st.form("registro_formulario"):
     fecha = st.date_input("Fecha", value=date.today())
     placa = st.selectbox("Placa", placas)

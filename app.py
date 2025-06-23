@@ -6,7 +6,7 @@ from datetime import date
 # Configura la página
 st.set_page_config(page_title="Alisto Unimar", layout="centered")
 
-# Estilos opcionales
+# Estilo opcional
 st.markdown("""
     <style>
     .stButton>button {
@@ -27,9 +27,11 @@ placas = [
     "DEMASA","INOLASA","EXPORTACION UNIMAR","HILLTOP","SAM","CARTAINESA","AUTODELI","WALMART","PRICSMART"
 ]
 
-# Autenticación con Google Sheets
+# Autenticación con Google Sheets usando ruta absoluta
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credenciales.json", scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name(
+    r"C:\credenciales\credenciales.json", scope
+)
 client = gspread.authorize(creds)
 
 # Accede a la hoja

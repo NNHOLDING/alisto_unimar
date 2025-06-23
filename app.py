@@ -1,12 +1,13 @@
 import streamlit as st
 import gspread
+import json
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import date
 
-# Configura la página
+# Configuración de página
 st.set_page_config(page_title="Alisto Unimar", layout="centered")
 
-# Estilo opcional
+# Estilos opcionales
 st.markdown("""
     <style>
     .stButton>button {
@@ -27,17 +28,16 @@ placas = [
     "DEMASA","INOLASA","EXPORTACION UNIMAR","HILLTOP","SAM","CARTAINESA","AUTODELI","WALMART","PRICSMART"
 ]
 
-# Autenticación con Google Sheets usando ruta absoluta
+# Autenticación con Google Sheets desde secrets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(
-    r"C:\credenciales\credenciales.json", scope
-)
+service_account_info = json.loads(st.secrets["gcp_service_account"].to_json())
+creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
 client = gspread.authorize(creds)
 
-# Accede a la hoja
+# Accede a la hoja de cálculo
 sheet = client.open("Registros Unimar").sheet1
 
-# Título
+# Encabezado
 st.markdown("<h2 style='color: teal;'>📋 Registro de ingreso de unidades</h2>", unsafe_allow_html=True)
 
 # Formulario

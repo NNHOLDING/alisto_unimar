@@ -4,15 +4,15 @@ import pytz
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# Configuración inicial
+# Configuración de la aplicación
 st.set_page_config(page_title="Alisto Unimar", layout="centered")
 st.title("Formulario - Alisto Unimar")
 st.markdown("Por favor completa los siguientes datos:")
 
-# Zona horaria de Costa Rica
+# 📍 Zona horaria de Costa Rica
 zona_cr = pytz.timezone("America/Costa_Rica")
 
-# Lista de placas
+# 🚚 Lista de placas
 placas = [
     "200", "201", "202", "203", "204", "205", "206", "207", "208", "209", "210", "211", "212", "213", "214", "215", "216", "216", "218",
     "300", "301", "302", "303", "304", "305", "306", "307", "308", "309", "310", "311", "312", "313", "314", "315", "316", "317", "318",
@@ -23,27 +23,30 @@ placas = [
     "DEMASA", "INOLASA", "EXPORTACION UNIMAR", "HILLTOP", "SAM", "CARTAINESA", "AUTODELI", "WALMART", "PRICSMART"
 ]
 
-# Autenticación con Google Sheets
+# 🔐 Autenticación con Google Sheets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 service_account_info = st.secrets["gcp_service_account"]
 credentials = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
 client = gspread.authorize(credentials)
 sheet = client.open_by_key("1o-GozoYaU_4Ra2KgX05Yi4biDV9zcd6BGdqOdSxKAv0").sheet1
 
-# Formulario
+# 📋 Formulario
 with st.form("formulario_registro"):
     fecha = st.date_input("Fecha", value=date.today())
     placa = st.selectbox("Placa", placas)
-
+    
     enviado = st.form_submit_button("Enviar")
 
     if enviado:
-        # Captura automática de hora de inicio y fin según zona de Costa Rica
-        hora_actual_cr = datetime.now(zona_cr).strftime("%H:%M")
-        sheet.append_row([str(fecha), placa, hora_actual_cr, hora_actual_cr])
+        # 🕒 Captura de hora en zona de Costa Rica
+        hora_actual = datetime.now(zona_cr).strftime("%H:%M:%S")
 
+        # 📤 Enviar a Google Sheets
+        sheet.append_row([str(fecha), placa, hora_actual, hora_actual])
+
+        # ✅ Confirmación
         st.success("✅ Datos enviados exitosamente a Google Sheets")
         st.write(f"📅 Fecha: {fecha}")
         st.write(f"🚛 Placa: {placa}")
-        st.write(f"🕐 Hora de inicio (CR): {hora_actual_cr}")
-        st.write(f"🕓 Hora de fin (CR): {hora_actual_cr}")
+        st.write(f"🕐 Hora de inicio (CR): {hora_actual}")
+        st.write(f"🕓 Hora de fin (CR): {hora_actual}")
